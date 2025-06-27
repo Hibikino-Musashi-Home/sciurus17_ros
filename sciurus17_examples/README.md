@@ -260,7 +260,7 @@ ros2 run sciurus17_examples open_client.py right
 ```
 
 ## 右アーム制御（エンドエフェクタの座標指定）
-以下のコマンドは、Sciurus17の右アームを制御するためのROS 2コマンドです。
+以下のコマンドは、Sciurus17の右アームを制御するためのROS 2コマンドです。  
 エンドエフェクタの座標と向きを指定します。  
 ステートマシン内で制御するには、client.pyのクラスをステートマシン内でインスタンス化し、send_pose_goal関数を呼び出します。
 ### 右アームを制御するサーバーを起動
@@ -272,7 +272,7 @@ ros2 run sciurus17_examples set_end_effector_pose_right_arm_waist_server
 ros2 run sciurus17_examples set_end_effector_pose_right_arm_waist_client.py
 ```
 ## 左アーム制御（エンドエフェクタの座標指定）
-以下のコマンドは、Sciurus17の左アームを制御するためのROS 2コマンドです。
+以下のコマンドは、Sciurus17の左アームを制御するためのROS 2コマンドです。  
 エンドエフェクタの座標と向きを指定します。  
 ステートマシン内で制御するには、client.pyのクラスをステートマシン内でインスタンス化し、send_pose_goal関数を呼び出します。
 ### 左アームを制御するサーバーを起動
@@ -282,4 +282,18 @@ ros2 run sciurus17_examples set_end_effector_pose_left_arm_waist_server
 ### クライアントを起動し、エンドエフェクタを指定した座標に移動させる
 ```bash
 ros2 run sciurus17_examples set_end_effector_pose_left_arm_waist_client.py
+```
+
+## 左アーム制御（直線移動）
+以下のコマンドは、Sciurus17の左アームを制御するためのROS 2コマンドです。  
+エンドエフェクタの座標と向きを指定します。  
+エンドエフェクタを現在の座標から指定した座標まで直線移動させます。  
+ステートマシン内で制御するには、client.pyのクラスをステートマシン内でインスタンス化し、send_pose_goal関数を呼び出します。
+### 左アームを制御するサーバーを起動
+```bash
+ros2 run sciurus17_examples cartesian_pose_left_arm_waist_server
+```
+### クライアントを起動し、エンドエフェクタを指定した座標に移動させる
+```bash
+ros2 run sciurus17_examples cartesian_pose_left_arm_waist_client.py
 ```

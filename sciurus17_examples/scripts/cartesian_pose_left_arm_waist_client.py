@@ -8,10 +8,10 @@ from geometry_msgs.msg import Pose
 import sys
 import time
 
-class SetEndEffectorPoseLeftArmWaist(Node):
+class CartesianPoseLeftArmWaist(Node):
     def __init__(self):
         super().__init__('set_pose_client')
-        self._client = ActionClient(self, SetPose, 'set_end_effector_pose_left_arm_waist')
+        self._client = ActionClient(self, SetPose, 'cartesian_pose_left_arm_waist')
 
     def send_pose_goal(self, pose: Pose):
         self.get_logger().info('Waiting for action server...')
@@ -41,13 +41,13 @@ class SetEndEffectorPoseLeftArmWaist(Node):
 
 def main():
     rclpy.init()
-    client = SetEndEffectorPoseLeftArmWaist()
+    client = CartesianPoseLeftArmWaist()
 
     # 任意の目標姿勢
     pose = Pose()
     pose.position.x = 0.4
     pose.position.y = 0.0
-    pose.position.z = 0.2
+    pose.position.z = 0.1
     pose.orientation.x = -0.7071
     pose.orientation.y = 0.0
     pose.orientation.z = 0.0
