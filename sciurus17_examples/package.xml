@@ -24,6 +24,7 @@
   <depend>image_geometry</depend>
   <depend>libopencv-dev</depend>
   <depend>moveit_ros_planning_interface</depend>
+  <depend>sciurus17_gripper_interfaces</depend>
   <depend>pcl_ros</depend>
   <depend>rclcpp</depend>
   <depend>rclcpp_components</depend>

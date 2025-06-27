@@ -1,0 +1,5 @@
+# SetHandAngle.srv
+int32 angle     # ハンドの開閉角度、0〜100など
+---
+bool success    # サービス実行結果（成功ならtrue）
+string message  # 結果の詳細メッセージ

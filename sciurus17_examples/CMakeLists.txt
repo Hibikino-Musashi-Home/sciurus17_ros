@@ -30,6 +30,7 @@ find_package(rclcpp REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(rclcpp_components REQUIRED)
+find_package(sciurus17_gripper_interfaces REQUIRED)
 
 include_directories(include)
 
@@ -113,12 +114,14 @@ install(
 # Build and install node executables
 set(executable_list
   gripper_control
+  gripper_server
   neck_control
   waist_control
   pick_and_place_right_arm_waist
   pick_and_place_left_arm
   pick_and_place_tf
   point_cloud_detection
+  pick_up_onigiri_test
 )
 foreach(loop_var IN LISTS executable_list)
   add_executable(${loop_var} src/${loop_var}.cpp)
@@ -129,6 +132,7 @@ foreach(loop_var IN LISTS executable_list)
     geometry_msgs
     image_geometry
     moveit_ros_planning_interface
+    sciurus17_gripper_interfaces
     OpenCV
     pcl_ros
     pcl_conversions
@@ -142,6 +146,14 @@ foreach(loop_var IN LISTS executable_list)
     DESTINATION lib/${PROJECT_NAME}
   )
 endforeach()
+
+install(PROGRAMS
+  scripts/open_client.py
+  scripts/close_client.py
+  scripts/dynamic_gripper_client.py
+  scripts/slip_control_gripper_client.py
+  DESTINATION lib/${PROJECT_NAME}
+)
 
 install(DIRECTORY
   launch

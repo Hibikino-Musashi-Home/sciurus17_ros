@@ -22,6 +22,7 @@ from launch.actions import IncludeLaunchDescription
 from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
+from launch_ros.actions import Node
 
 
 def generate_launch_description():
@@ -93,6 +94,32 @@ def generate_launch_description():
             condition=IfCondition(LaunchConfiguration('use_chest_camera')),
         )
 
+    l_gemini_tf_pub_node = Node(
+        package='tf2_ros',
+        executable='static_transform_publisher',
+        name='l_gemini_tf_pub_node',
+        output='screen',
+        arguments=[
+            '0.0', '0.032', '0.0191',    # xyz
+            '-1.57', '-1.57', '0.0',      # rpy
+            'l_link7',          # parent frame
+            'l_gemini_link'              # child frame
+        ]
+    )
+
+    r_gemini_tf_pub_node = Node(
+        package='tf2_ros',
+        executable='static_transform_publisher',
+        name='r_gemini_tf_pub_node',
+        output='screen',
+        arguments=[
+            '0.0', '-0.032', '-0.0191',    # xyz
+            '-1.57', '1.57', '0.0',      # rpy
+            'r_link7',          # parent frame
+            'r_gemini_link'              # child frame
+        ]
+    )
+
     return LaunchDescription([
         declare_port_name,
         declare_baudrate,
@@ -101,5 +128,7 @@ def generate_launch_description():
         move_group,
         control_node,
         head_camera_node,
-        chest_camera_node
+        chest_camera_node,
+        l_gemini_tf_pub_node,
+        r_gemini_tf_pub_node
     ])
