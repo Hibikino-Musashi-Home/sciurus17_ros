@@ -223,3 +223,51 @@ ros2 launch sciurus17_examples camera_example.launch.py example:='point_cloud_de
 [back to example list](#examples)
 
 ---
+
+## グリッパー制御コマンド一覧（デフォルトは左手）
+
+以下のコマンドは、Sciurus17の左グリッパー（デフォルト）を制御するためのROS 2コマンドです。
+
+### 🧩 グリッパー制御ノードの起動
+
+```bash
+ros2 run sciurus17_examples gripper_server
+```
+### ✋ グリッパーを開く
+
+```bash
+ros2 run sciurus17_examples open_client.py
+```
+### ✊ グリッパーを閉じる
+
+```bash
+ros2 run sciurus17_examples close_client.py
+```
+### 🖐️ 触覚センサを用いたグリッパー制御
+
+```bash
+ros2 run sciurus17_examples dynamic_gripper_client.py
+```
+### 🔄 滑りを検知して把持力を自動調整（スリップ制御）
+
+```bash
+ros2 run sciurus17_examples slip_control_gripper_client.py
+```
+### 全てのグリッパー制御コマンドの引数に"right"をつけるとSciurus17の右グリッパーが制御できます
+```bash
+% example
+ros2 run sciurus17_examples open_client.py right
+```
+
+## 右アーム制御（エンドエフェクタの座標指定）
+以下のコマンドは、Sciurus17の右アームを制御するためのROS 2コマンドです。
+エンドエフェクタの座標と向きを指定します。  
+ステートマシン内で制御するには、client.pyのクラスをステートマシン内でインスタンス化し、send_pose_goal関数を呼び出します。
+### 右アームを制御するサーバーを起動
+```bash
+ros2 run sciurus17_examples set_end_effector_pose_right_arm_waist_server
+```
+### クライアントを起動し、エンドエフェクタを指定した座標に移動させる
+```bash
+ros2 run sciurus17_examples set_end_effector_pose_right_arm_waist_client.py
+```
