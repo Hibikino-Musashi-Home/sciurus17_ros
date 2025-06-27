@@ -148,11 +148,11 @@ foreach(loop_var IN LISTS executable_list)
   )
 endforeach()
 
-add_executable(set_end_effector_pose_right_arm_waist_node
-  src/set_end_effector_pose_right_arm_waist_node.cpp
+add_executable(set_end_effector_pose_right_arm_waist_server
+  src/set_end_effector_pose_right_arm_waist_server.cpp
 )
 
-ament_target_dependencies(set_end_effector_pose_right_arm_waist_node
+ament_target_dependencies(set_end_effector_pose_right_arm_waist_server
   rclcpp
   rclcpp_action
   geometry_msgs
@@ -162,7 +162,7 @@ ament_target_dependencies(set_end_effector_pose_right_arm_waist_node
 )
 
 install(TARGETS
-  set_end_effector_pose_right_arm_waist_node
+  set_end_effector_pose_right_arm_waist_server
   DESTINATION lib/${PROJECT_NAME}
 )
 
@@ -171,6 +171,7 @@ install(PROGRAMS
   scripts/close_client.py
   scripts/dynamic_gripper_client.py
   scripts/slip_control_gripper_client.py
+  scripts/set_end_effector_pose_right_arm_waist_client.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
