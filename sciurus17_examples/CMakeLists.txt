@@ -31,6 +31,7 @@ find_package(tf2_geometry_msgs REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(sciurus17_gripper_interfaces REQUIRED)
+find_package(sciurus17_interfaces REQUIRED)
 
 include_directories(include)
 
@@ -146,6 +147,24 @@ foreach(loop_var IN LISTS executable_list)
     DESTINATION lib/${PROJECT_NAME}
   )
 endforeach()
+
+add_executable(set_end_effector_pose_right_arm_waist_node
+  src/set_end_effector_pose_right_arm_waist_node.cpp
+)
+
+ament_target_dependencies(set_end_effector_pose_right_arm_waist_node
+  rclcpp
+  rclcpp_action
+  geometry_msgs
+  moveit_ros_planning_interface
+  tf2_geometry_msgs
+  sciurus17_interfaces   # ← アクション型を使うので必須
+)
+
+install(TARGETS
+  set_end_effector_pose_right_arm_waist_node
+  DESTINATION lib/${PROJECT_NAME}
+)
 
 install(PROGRAMS
   scripts/open_client.py
