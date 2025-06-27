@@ -297,3 +297,17 @@ ros2 run sciurus17_examples cartesian_pose_left_arm_waist_server
 ```bash
 ros2 run sciurus17_examples cartesian_pose_left_arm_waist_client.py
 ```
+
+## 右アーム制御（直線移動）
+以下のコマンドは、Sciurus17の右アームを制御するためのROS 2コマンドです。  
+エンドエフェクタの座標と向きを指定します。  
+エンドエフェクタを現在の座標から指定した座標まで直線移動させます。  
+ステートマシン内で制御するには、client.pyのクラスをステートマシン内でインスタンス化し、send_pose_goal関数を呼び出します。
+### 右アームを制御するサーバーを起動
+```bash
+ros2 run sciurus17_examples cartesian_pose_right_arm_waist_server
+```
+### クライアントを起動し、エンドエフェクタを指定した座標に移動させる
+```bash
+ros2 run sciurus17_examples cartesian_pose_right_arm_waist_client.py
+```
