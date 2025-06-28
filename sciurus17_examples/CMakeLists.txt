@@ -202,6 +202,25 @@ install(TARGETS
   DESTINATION lib/${PROJECT_NAME}
 )
 
+add_executable(set_joint_values_left_arm_waist_server
+  src/set_joint_values_left_arm_waist_server.cpp
+)
+
+ament_target_dependencies(set_joint_values_left_arm_waist_server
+  rclcpp
+  rclcpp_action
+  geometry_msgs
+  moveit_ros_planning_interface
+  tf2_geometry_msgs
+  sciurus17_interfaces   # ← アクション型を使うので必須
+)
+
+install(TARGETS
+  set_joint_values_left_arm_waist_server
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+
 add_executable(cartesian_pose_left_arm_waist_server
   src/cartesian_pose_left_arm_waist_server.cpp
 )
@@ -230,6 +249,7 @@ install(PROGRAMS
   scripts/set_end_effector_pose_left_arm_waist_client.py
   scripts/cartesian_pose_left_arm_waist_client.py
   scripts/cartesian_pose_right_arm_waist_client.py
+  scripts/set_joint_values_left_arm_waist_client.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

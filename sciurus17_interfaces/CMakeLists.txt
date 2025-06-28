@@ -14,6 +14,7 @@ find_package(geometry_msgs REQUIRED)
 # Generate interfaces
 rosidl_generate_interfaces(${PROJECT_NAME}
   "action/SetPose.action"
+  "action/SetJointValues.action"
   DEPENDENCIES geometry_msgs
 )
 
