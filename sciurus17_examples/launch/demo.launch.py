@@ -129,7 +129,7 @@ def generate_launch_description():
         move_group,
         control_node,
         head_camera_node,
-        chest_camera_node,
-        l_gemini_tf_pub_node,
-        r_gemini_tf_pub_node
+        chest_camera_node
+        # l_gemini_tf_pub_node,
+        # r_gemini_tf_pub_node
     ])
