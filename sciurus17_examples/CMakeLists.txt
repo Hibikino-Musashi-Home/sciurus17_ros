@@ -149,6 +149,25 @@ foreach(loop_var IN LISTS executable_list)
 endforeach()
 
 
+add_executable(set_end_effector_pose_right_arm_server
+  src/set_end_effector_pose_right_arm_server.cpp
+)
+
+ament_target_dependencies(set_end_effector_pose_right_arm_server
+  rclcpp
+  rclcpp_action
+  geometry_msgs
+  moveit_ros_planning_interface
+  tf2_geometry_msgs
+  sciurus17_interfaces   # ← アクション型を使うので必須
+)
+
+install(TARGETS
+  set_end_effector_pose_right_arm_server
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+
 add_executable(set_end_effector_pose_left_arm_server
   src/set_end_effector_pose_left_arm_server.cpp
 )
@@ -293,6 +312,7 @@ install(PROGRAMS
   scripts/set_joint_values_left_arm_waist_client.py
   scripts/set_joint_values_right_arm_waist_client.py
   scripts/set_end_effector_pose_left_arm_client.py
+  scripts/set_end_effector_pose_right_arm_client.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
