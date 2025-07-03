@@ -116,6 +116,7 @@ install(
 set(executable_list
   gripper_control
   gripper_server
+  gripper_torque_server
   neck_control
   waist_control
   pick_and_place_right_arm_waist
@@ -297,13 +298,30 @@ install(TARGETS
   DESTINATION lib/${PROJECT_NAME}
 )
 
+add_executable(set_joint_values_neck_server
+  src/set_joint_values_neck_server.cpp
+)
 
+ament_target_dependencies(set_joint_values_neck_server
+  rclcpp
+  rclcpp_action
+  geometry_msgs
+  moveit_ros_planning_interface
+  tf2_geometry_msgs
+  sciurus17_interfaces   # ← アクション型を使うので必須
+)
+
+install(TARGETS
+  set_joint_values_neck_server
+  DESTINATION lib/${PROJECT_NAME}
+)
 
 
 install(PROGRAMS
   scripts/open_client.py
   scripts/close_client.py
   scripts/dynamic_gripper_client.py
+  scripts/dynamic_gripper_torque_client.py
   scripts/slip_control_gripper_client.py
   scripts/set_end_effector_pose_right_arm_waist_client.py
   scripts/set_end_effector_pose_left_arm_waist_client.py
@@ -313,6 +331,7 @@ install(PROGRAMS
   scripts/set_joint_values_right_arm_waist_client.py
   scripts/set_end_effector_pose_left_arm_client.py
   scripts/set_end_effector_pose_right_arm_client.py
+  scripts/set_joint_values_neck_client.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
