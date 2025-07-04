@@ -1,0 +1,5 @@
+float64 torque           # N·m で指定（右手正, 左手負）
+                         # ← 空行を 1 行あける
+---
+bool success
+string message

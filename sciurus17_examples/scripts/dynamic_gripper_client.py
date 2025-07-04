@@ -1,20 +1,19 @@
 #!/usr/bin/env python3
 """
-dynamic_gripper_client.py
-
-- gripper_server.cpp の /left/set_hand_angle, /right/set_hand_angle に対応
-- 実行引数で対象側（left/right）を切替可能（デフォルトは left）
+dynamic_gripper_client.py  ― 把持力しきい値で停止し、
+/gripper/grasp_done (std_srvs/SetBool) を呼び出して把持完了を通知する版
 """
 
 import sys
 import time
-import math
 
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import Int32, Bool
-
+from std_msgs.msg import Int32
 from xela_server_ros2.msg import ZForceAvg
+
+# ★ 追加: SetBool サービス型
+from std_srvs.srv import SetBool
 from sciurus17_gripper_interfaces.srv import SetHandAngle
 
 # ---------- 可変パラメータ ----------
@@ -22,7 +21,7 @@ ANGLE_START      = 100
 TARGET_ANGLE     = 0
 ANGLE_STEP       = 3
 SLEEP_SEC        = 0.05
-FORCE_THRESHOLD  = 0.09
+FORCE_THRESHOLD  = 0.5
 # -----------------------------------
 
 
@@ -30,39 +29,38 @@ class ForceAwareGripperClient(Node):
     def __init__(self, side='left'):
         super().__init__('force_aware_gripper_client')
 
-        # 利き腕の設定
+        # ------- ハンド角度サービス -------
         ns = '/left' if side == 'left' else '/right'
-        service_name = f'{ns}/set_hand_angle'
-
-        self.get_logger().info(f'Service target: {service_name}')
-        self.current_angle = ANGLE_START
-
-        # サービスクライアント
-        self.cli = self.create_client(SetHandAngle, service_name)
+        angle_srv_name = f'{ns}/set_hand_angle'
+        self.cli = self.create_client(SetHandAngle, angle_srv_name)
         while not self.cli.wait_for_service(timeout_sec=1.0):
-            self.get_logger().info(f'サービス "{service_name}" を待機中…')
-        self.req = SetHandAngle.Request()
+            self.get_logger().info(f'サービス "{angle_srv_name}" を待機中…')
+        self.angle_req = SetHandAngle.Request()
 
-        # 角度ステータス Publisher（任意）
+        # ------- 把持完了サービス (SetBool) -------
+        self.done_cli = self.create_client(SetBool, 'gripper/grasp_done')
+        self.done_req = SetBool.Request()          # Request は data(bool)1つ
+        self.done_req.data = True                 # ← 常に True を送る
+
+        # ------- そのほか -------
+        self.current_angle = ANGLE_START
         self.angle_pub = self.create_publisher(Int32, 'gripper/current_angle', 10)
-
-        # 力センサ Subscriber
         self.force_exceeded = False
         self.latest_force_z = 0.0
         self.create_subscription(ZForceAvg, 'z_force_avg', self.force_cb, 10)
 
-        self.done_pub = self.create_publisher(Bool, 'gripper/grasp_done', 1)
-
+    # --- コールバック ---
     def force_cb(self, msg: ZForceAvg):
         self.latest_force_z = msg.z_avg
         if msg.z_avg > FORCE_THRESHOLD and not self.force_exceeded:
             self.force_exceeded = True
             self.get_logger().warn(
-                f'z_avg= {msg.z_avg:.3f} > {FORCE_THRESHOLD} → 停止')
+                f'z_avg={msg.z_avg:.3f} > {FORCE_THRESHOLD} → 停止')
 
+    # --- 角度送信 ---
     def send_angle(self, angle: int) -> bool:
-        self.req.angle = angle
-        future = self.cli.call_async(self.req)
+        self.angle_req.angle = angle
+        future = self.cli.call_async(self.angle_req)
         rclpy.spin_until_future_complete(self, future)
 
         if future.result() is None or not future.result().success:
@@ -75,6 +73,16 @@ class ForceAwareGripperClient(Node):
         self.current_angle = angle
         return True
 
+    # --- 把持完了サービス呼び出し ---
+    def notify_grasp_done(self):
+        future = self.done_cli.call_async(self.done_req)
+        rclpy.spin_until_future_complete(self, future)
+        if future.result() is None or not future.result().success:
+            self.get_logger().error('/gripper/grasp_done 呼び出し失敗')
+        else:
+            self.get_logger().info('/gripper/grasp_done サービス呼び出し成功')
+
+    # --- メイン処理 ---
     def run(self):
         self.get_logger().info(f'開始: {ANGLE_START}° → {TARGET_ANGLE}°')
 
@@ -90,15 +98,15 @@ class ForceAwareGripperClient(Node):
                 break
             time.sleep(SLEEP_SEC)
 
+        # 最終角度を publish（任意）
         final_angle_msg = Int32()
         final_angle_msg.data = self.current_angle
         self.angle_pub.publish(final_angle_msg)
 
-        done_msg = Bool()
-        done_msg.data = True
-        self.done_pub.publish(done_msg)
+        # ★ 把持完了サービスを送信
+        self.notify_grasp_done()
 
-        self.get_logger().info(f'完了: 最終角度 = {self.current_angle}°, grasp_done 発行')
+        self.get_logger().info(f'完了: 最終角度 = {self.current_angle}°')
 
 
 def main(args=None):

@@ -46,7 +46,7 @@ def main():
     # 任意の目標姿勢
     pose = Pose()
     pose.position.x = 0.4
-    pose.position.y = 0.0
+    pose.position.y = 0.2
     pose.position.z = 0.1
     pose.orientation.x = -0.7071
     pose.orientation.y = 0.0

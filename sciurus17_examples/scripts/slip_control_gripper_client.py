@@ -6,8 +6,9 @@ from typing import Optional
 
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import Bool, Int32
+from std_msgs.msg import Int32
 from sciurus17_gripper_interfaces.srv import SetHandAngle
+from std_srvs.srv import SetBool           # ★ 追加
 from xela_server_ros2.msg import SensStream
 
 # -------------------- パラメータ -------------------- #
@@ -15,7 +16,7 @@ SLIP_T_TH         = 0.015
 SLIP_RATIO_TH     = 0.35
 CONTACT_N_MIN     = 0.02
 WINDOW            = 3
-CLOSE_STEP_DEG    = 1
+CLOSE_STEP_DEG    = 4
 MIN_ANGLE_DEG     = 0
 SEND_INTERVAL_SEC = 0.05
 SETTLE_SEC        = 0.3
@@ -34,25 +35,36 @@ class SlipControlGripper(Node):
         self.busy = False
         self.pending_angle: Optional[int] = None
 
-        # --- 通信
-        self.create_subscription(Bool, 'gripper/grasp_done', self.trigger_cb, 10)
+        # === 通信 ===
+        # 1) 把持完了通知をサービスとして受け取る
+        self.create_service(SetBool, 'gripper/grasp_done', self.grasp_done_srv)
+
+        # 2) 現在角度 & 触覚センサ
         self.create_subscription(Int32, 'gripper/current_angle', self.angle_cb, 10)
         self.create_subscription(SensStream, 'xServTopic', self.tactile_cb, 10)
 
+        # 3) ハンド角度サービス（既存）
         self.cli = self.create_client(SetHandAngle, service_ns)
         while not self.cli.wait_for_service(timeout_sec=1.0):
             self.get_logger().info(f'サービス {service_ns} を待機中…')
         self.req = SetHandAngle.Request()
 
+        # 内部バッファ
         self.force_buf: deque[tuple[float, float]] = deque(maxlen=WINDOW)
         self.create_timer(0.02, self.slip_check)
 
-    def trigger_cb(self, msg: Bool):
-        if msg.data and not self.enabled:
+    # -------- grasp_done サービスコールバック ----------
+    def grasp_done_srv(self, request: SetBool.Request, response: SetBool.Response):
+        """dynamic_gripper_client.py から True が届く想定"""
+        if request.data and not self.enabled:
             self.enabled = True
             self.force_buf.clear()
             self.settle_deadline = self.get_clock().now().nanoseconds * 1e-9 + SETTLE_SEC
             self.get_logger().info(f'grasp_done 受信 → {SETTLE_SEC}s 待機後に滑り監視開始')
+        response.success = True
+        response.message = 'Slip control armed'
+        return response
+    # -----------------------------------------------------
 
     def angle_cb(self, msg: Int32):
         self.current_angle = int(msg.data)
@@ -86,6 +98,7 @@ class SlipControlGripper(Node):
             self.get_logger().warn(f'SLIP! t={t_avg:.3f} N n={n_avg:.3f} μ≈{ratio:.2f}')
             self.close_a_bit()
 
+    # ---- 以降（close_a_bit, send_angle_async, handle_service_response, main）は変更無し ----
     def close_a_bit(self):
         if self.current_angle <= MIN_ANGLE_DEG:
             self.get_logger().info('最小角度 reached')
@@ -128,7 +141,6 @@ class SlipControlGripper(Node):
             self.send_angle_async(next_angle)
 
 # ------------------------- main ------------------------- #
-
 def main(args=None):
     rclpy.init(args=args)
     hand_side = "left"

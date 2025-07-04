@@ -14,6 +14,7 @@ find_package(std_msgs REQUIRED)
 set(srv_files
   "srv/SetHandAngle.srv"
   "srv/GetHandAngle.srv"
+  "srv/SetHandTorque.srv"
 )
 
 # カスタムインターフェースの生成

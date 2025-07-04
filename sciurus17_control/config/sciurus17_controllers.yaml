@@ -16,6 +16,16 @@ controller_manager:
       type: joint_trajectory_controller/JointTrajectoryController
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
+    
+    # right_gripper_effort_controller:
+    #   type: effort_controllers/JointEffortController
+    #   joint: r_gripper_joint
+    #   interface_name: effort
+
+    # left_gripper_effort_controller:
+    #   type: effort_controllers/JointEffortController
+    #   joint: l_gripper_joint
+    #   interface_name: effort
 
 right_arm_controller:
   ros__parameters:

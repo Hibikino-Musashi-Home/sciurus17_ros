@@ -56,8 +56,8 @@ private:
 
     // MoveGroupInterface の準備
     moveit::planning_interface::MoveGroupInterface move_group(move_group_node_, "l_arm_waist_group");
-    move_group.setMaxVelocityScalingFactor(0.2);
-    move_group.setMaxAccelerationScalingFactor(0.2);
+    move_group.setMaxVelocityScalingFactor(0.05);
+    move_group.setMaxAccelerationScalingFactor(0.05);
 
     // 現在のPoseを取得（エンドエフェクタ名を指定）
     geometry_msgs::msg::Pose pose_start = move_group.getCurrentPose("l_link7").pose;
